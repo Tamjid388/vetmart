@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
+
+/* E8a: mobile bottom tab bar — height token shared with AppLayout content offset. */
+:root {
+  --bottom-bar-height: 68px;
+}
+
+/* Fixed bottom bar: white bg + divider come from the component; this only
+   reserves the iOS home-indicator area so the bar never overlaps it. */
+.mobile-bottom-bar {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hide the scrollbar on horizontal chip rows (mobile filters) while keeping
+   touch/mouse swipe scrolling. Covers Chrome/Safari (webkit), Firefox, Edge. */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Desktop sider: pin logo top + logout above the collapse trigger,
+   scroll only the nav in the middle. Without this the whole sider
+   (logout + trigger included) scrolls as one block, so on short
+   laptop viewports logout slides below the fold and the trigger
+   overlaps it. */
+.vetmart-sider {
+  overflow: hidden;
+}
+
+.vetmart-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.vetmart-sider-nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.vetmart-sider-logout {
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
