@@ -1,0 +1,48 @@
+enum StockLedgerType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  RETURN
+  OPENING
+}
+
+model ProductBatch {
+  id            String    @id @default(cuid())
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  batchNumber   String?
+  expiryDate    DateTime?
+  purchasePrice Decimal   @db.Decimal(10, 2)
+  stock         Int       @default(0)
+  weightKg      Decimal?  @db.Decimal(10, 2)
+  receivedAt    DateTime  @default(now())
+
+  // FIX 2026-09-17: back-relation of StockLedger.batch (was missing — bare batchId with no @relation).
+  ledgerEntries StockLedger[]
+  saleItems     SaleItem[]
+  purchaseItems PurchaseItem[]
+
+  @@unique([productId, batchNumber])
+  @@index([productId])
+  @@index([expiryDate])
+  @@map("product_batches")
+}
+
+model StockLedger {
+  id         String          @id @default(cuid())
+  productId  String
+  product    Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  batchId    String?
+  // FIX 2026-09-17: batch relation was missing (batchId had no @relation). SetNull preserves audit trail.
+  batch      ProductBatch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  type       StockLedgerType
+  qtyDelta   Int
+  stockAfter Int
+  refId      String?
+  createdBy  String?
+  createdAt  DateTime        @default(now())
+
+  @@index([productId, createdAt])
+  @@index([batchId])
+  @@map("stock_ledger")
+}

@@ -1,0 +1,40 @@
+enum UserRole {
+  admin
+  staff
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      UserRole @default(staff)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sales Sale[]
+  collectedPayments Payment[]
+  receivedPurchases Purchase[]
+
+  @@map("users")
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  name       String
+  phone      String   @unique
+  address    String?
+  area       String?
+  category   String?
+  dueBalance Decimal  @default(0) @db.Decimal(12, 2)
+  isActive   Boolean  @default(true)
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  sales Sale[]
+  payments Payment[]
+
+  @@map("customers")
+}

@@ -1,0 +1,64 @@
+model Purchase {
+  id             String              @id @default(cuid())
+  invoiceNo      String              @unique
+  idempotencyKey String              @unique
+  supplierId     String
+  supplier       Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  purchaseDate   DateTime            @default(now())
+  subtotal       Decimal             @db.Decimal(12, 2)
+  discount       Decimal             @default(0) @db.Decimal(12, 2)
+  vatTotal       Decimal             @default(0) @db.Decimal(12, 2)
+  grandTotal     Decimal             @db.Decimal(12, 2)
+  paidAmount     Decimal             @db.Decimal(12, 2)
+  dueAmount      Decimal             @default(0) @db.Decimal(12, 2)
+  paymentMethod  SalePaymentMethod?
+  paymentStatus  SalePaymentStatus
+  receivedBy     String
+  receivedByUser User                @relation(fields: [receivedBy], references: [id], onDelete: Restrict)
+  notes          String?
+  isDeleted      Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  items          PurchaseItem[]
+  payments       Payment[]
+
+  @@index([supplierId])
+  @@index([purchaseDate])
+  @@index([paymentStatus])
+  @@index([receivedBy])
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id            String        @id @default(cuid())
+  purchaseId    String
+  purchase      Purchase      @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Restrict)
+  batchId       String?
+  batch         ProductBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  qty           Int
+  purchasePrice Decimal       @db.Decimal(10, 2)
+  sellingPrice  Decimal       @db.Decimal(10, 2)
+  vatPercent    Decimal       @default(0) @db.Decimal(5, 2)
+  lineTotal     Decimal       @db.Decimal(12, 2)
+  batchNumber   String?
+  expiryDate    DateTime?
+  weightKg      Decimal?      @db.Decimal(10, 2)
+
+  @@index([purchaseId])
+  @@index([productId])
+  @@index([batchId])
+  @@map("purchase_items")
+}
+
+// Single-row serialized GRN counter (id always 'purchase').
+// Invoice numbers come from an atomic UPDATE...RETURNING inside the purchase
+// transaction, so concurrent GRNs serialize on the row lock.
+model PurchaseCounter {
+  id         String   @id @default("purchase")
+  lastNumber Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@map("purchase_counter")
+}

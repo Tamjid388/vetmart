@@ -1,0 +1,19 @@
+model Supplier {
+  id             String   @id @default(cuid())
+  companyName    String
+  contactPerson  String?
+  phone          String   @unique
+  address        String?
+  tradeLicense   String?
+  paymentTerms   Int?
+  payableBalance Decimal  @default(0) @db.Decimal(12, 2)
+  isActive       Boolean  @default(true)
+  isDeleted      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  purchases      Purchase[]
+  vendorPayments Payment[]
+
+  @@map("suppliers")
+}

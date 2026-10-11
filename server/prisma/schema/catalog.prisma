@@ -1,0 +1,101 @@
+enum ProductType {
+  MEDICINE
+  FEED
+}
+
+enum MedicineForm {
+  TABLET
+  CAPSULE
+  SYRUP
+  INJECTION
+  CREAM
+  OINTMENT
+  POWDER
+  DROPS
+  SUSPENSION
+  SOLUTION
+  OTHER
+}
+
+enum ProductUnit {
+  PIECE
+  STRIP
+  BOTTLE
+  BOX
+  VIAL
+  AMPOULE
+  TUBE
+  SACHET
+  BAG
+  KG
+  LITER
+  OTHER
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  productType ProductType
+  name        String
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  products    Product[]
+
+  @@unique([productType, name])
+  @@index([productType])
+  @@map("categories")
+}
+
+model Product {
+  id              String           @id @default(cuid())
+  productType     ProductType
+  sku             String?          @unique
+  name            String
+  description     String?
+  categoryId      String
+  category        Category         @relation(fields: [categoryId], references: [id])
+  unit            ProductUnit
+  purchasePrice   Decimal          @db.Decimal(10, 2)
+  sellingPrice    Decimal          @db.Decimal(10, 2)
+  minStock        Int              @default(0)
+  vatPercent      Decimal          @default(0) @db.Decimal(5, 2)
+  manufacturer    String?
+  barcode         String?          @unique
+  imageUrl        String?
+  isActive        Boolean          @default(true)
+  isDeleted       Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  medicineDetails MedicineDetails?
+  feedDetails     FeedDetails?
+  batches         ProductBatch[]
+  ledger          StockLedger[]
+  saleItems       SaleItem[]
+  purchaseItems   PurchaseItem[]
+
+  @@index([productType])
+  @@index([categoryId])
+  @@map("products")
+}
+
+model MedicineDetails {
+  productId            String        @id
+  product              Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  form                 MedicineForm?
+  genericName          String?
+  strength             String?
+  requiresPrescription Boolean       @default(false)
+
+  @@map("medicine_details")
+}
+
+model FeedDetails {
+  productId     String   @id
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  targetSpecies String?
+  feedType      String?
+  proteinPct    Decimal? @db.Decimal(5, 2)
+  nominalPackKg Decimal? @db.Decimal(8, 2)
+
+  @@map("feed_details")
+}

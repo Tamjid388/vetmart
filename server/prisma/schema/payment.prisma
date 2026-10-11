@@ -1,0 +1,28 @@
+model Payment {
+  id              String            @id @default(cuid())
+  saleId          String?
+  sale            Sale?             @relation(fields: [saleId], references: [id], onDelete: SetNull)
+  customerId      String?
+  customer        Customer?         @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  // E6 vendor side: exactly one of customerId / supplierId is set (service check).
+  supplierId      String?
+  supplier        Supplier?         @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  purchaseId      String?
+  purchase        Purchase?         @relation(fields: [purchaseId], references: [id], onDelete: SetNull)
+  amount          Decimal           @db.Decimal(12, 2)
+  method          SalePaymentMethod
+  collectedBy     String
+  collectedByUser User              @relation(fields: [collectedBy], references: [id], onDelete: Restrict)
+  paidAt          DateTime          @default(now())
+  isDeleted       Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([customerId])
+  @@index([supplierId])
+  @@index([saleId])
+  @@index([purchaseId])
+  @@index([collectedBy])
+  @@index([paidAt])
+  @@map("payments")
+}
