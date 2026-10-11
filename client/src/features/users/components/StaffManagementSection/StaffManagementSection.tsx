@@ -30,7 +30,9 @@ const ROLE_OPTIONS = [
 
 function formatDate(value: string): string {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString('en-GB', { timeZone: 'Asia/Dhaka' });
 }
 
 function StaffManagementSection() {

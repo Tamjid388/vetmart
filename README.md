@@ -1,8 +1,6 @@
-# VetMart — BagherHat Poultry ERP
+# VetMart ERP
 
 Single-shop veterinary pharmacy ERP: Vendor → Purchase → Stock → POS Sale → Due/Cash → Payment → Reports.
-
-Product name is **BagherHat Poultry (বাগেরহাট পোল্ট্রি)**. `VetMart` is the development codename only (repo/folder names) and must never appear in user-facing UI.
 
 ## Repo layout
 

@@ -1,0 +1,81 @@
+enum SalePaymentMethod {
+  CASH
+  BKASH
+  NAGAD
+  CARD
+}
+
+enum SalePaymentStatus {
+  PAID
+  PARTIAL
+  DUE
+}
+
+enum SaleType {
+  REGISTERED
+  CASH
+}
+
+model Sale {
+  id             String            @id @default(cuid())
+  invoiceNo      String            @unique
+  idempotencyKey String            @unique
+  saleType       SaleType          @default(REGISTERED)
+  customerId     String?
+  customer       Customer?         @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  saleDate       DateTime          @default(now())
+  subtotal       Decimal           @db.Decimal(12, 2)
+  discount       Decimal           @default(0) @db.Decimal(12, 2)
+  vatTotal       Decimal           @default(0) @db.Decimal(12, 2)
+  grandTotal     Decimal           @db.Decimal(12, 2)
+  paidAmount     Decimal           @db.Decimal(12, 2)
+  dueAmount      Decimal           @default(0) @db.Decimal(12, 2)
+  paymentMethod  SalePaymentMethod?
+  paymentStatus  SalePaymentStatus
+  soldBy         String
+  soldByUser     User              @relation(fields: [soldBy], references: [id], onDelete: Restrict)
+  notes          String?
+  isDeleted      Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  items          SaleItem[]
+  payments       Payment[]
+
+  @@index([customerId])
+  @@index([saleType])
+  @@index([saleDate])
+  @@index([paymentStatus])
+  @@index([soldBy])
+  @@map("sales")
+}
+
+model SaleItem {
+  id            String        @id @default(cuid())
+  saleId        String
+  sale          Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Restrict)
+  batchId       String?
+  batch         ProductBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  qty           Int
+  sellingPrice  Decimal       @db.Decimal(10, 2)
+  purchasePrice Decimal       @db.Decimal(10, 2)
+  vatPercent    Decimal       @default(0) @db.Decimal(5, 2)
+  lineTotal     Decimal       @db.Decimal(12, 2)
+
+  @@index([saleId])
+  @@index([productId])
+  @@index([batchId])
+  @@map("sale_items")
+}
+
+// Single-row serialized invoice counter (id always 'sale').
+// Invoice numbers come from an atomic UPDATE...RETURNING inside the sale
+// transaction, so concurrent checkouts serialize on the row lock.
+model SaleCounter {
+  id         String   @id @default("sale")
+  lastNumber Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@map("sale_counter")
+}
