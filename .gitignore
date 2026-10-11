@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+dist-ssr/
+*.tsbuildinfo
+
+# env files (keep *.example tracked)
+.env
+.env.development
+.env.production
+*.local
+
+# vercel
+.vercel/
+
+# logs / coverage
+*.log
+logs/
+coverage/
+
+# local tool artifacts
+.playwright-mcp/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.sw?
