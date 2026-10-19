@@ -96,7 +96,7 @@ export const bottomTabDefs: BottomTabDef[] = [
   { key: '/dashboard', label: 'হোম', icon: <DashboardOutlined />, route: '/dashboard' },
   { key: '/sales', label: 'বিক্রি', icon: <ShopOutlined />, route: '/sales' },
   { key: '/products', label: 'পণ্য', icon: <MedicineBoxOutlined />, route: '/products' },
-  { key: '/payments', label: 'ক্যাশ', icon: <DollarOutlined />, route: '/payments' },
+  { key: '/payments', label: 'পেমেন্ট', icon: <DollarOutlined />, route: '/payments' },
   { key: 'more', label: 'আরও', icon: <MenuOutlined />, isMore: true },
 ];
 

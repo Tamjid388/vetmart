@@ -59,7 +59,7 @@ function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col lg:h-screen lg:flex-row lg:overflow-hidden">
-      <aside className="relative flex min-h-[280px] flex-col justify-between gap-6 overflow-hidden bg-[#0C231A] px-6 py-6 sm:px-8 lg:h-screen lg:w-[42%] lg:gap-0 lg:px-10 lg:py-8 xl:w-[44%] xl:px-14">
+      <aside className="relative flex flex-col justify-between gap-3 overflow-hidden bg-[#0C231A] px-6 py-4 sm:px-8 lg:h-screen lg:w-[42%] lg:gap-0 lg:px-10 lg:py-8 xl:w-[44%] xl:px-14">
         <div
           className="pointer-events-none absolute inset-0 opacity-40"
           style={{
@@ -77,7 +77,7 @@ function LoginPage() {
             </div>
           </div>
 
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-slate-400">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-400 lg:mt-6">
             Sign in to manage inventory, sales, vendors, and ledgers for your veterinary
             pharmacy — stock figures stay inside the workspace.
           </p>
