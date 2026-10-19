@@ -54,6 +54,7 @@ function LowStockAlert({ data }: LowStockAlertProps) {
         columns={columns}
         dataSource={data}
         pagination={false}
+        scroll={{ x: 480 }}
         locale={{ emptyText: 'No low-stock products' }}
       />
     </Card>

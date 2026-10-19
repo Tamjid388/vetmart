@@ -8,6 +8,7 @@ import { SaleRoutes } from '../modules/sales/sale.routes.js';
 import { PurchaseRoutes } from '../modules/purchases/purchase.routes.js';
 import { PaymentRoutes } from '../modules/payments/payment.routes.js';
 import { AuditRoutes } from '../modules/audits/audit.routes.js';
+import { DashboardRoutes } from '../modules/dashboard/dashboard.routes.js';
 
 export const appRoutes = Router();
 
@@ -22,6 +23,7 @@ const moduleRoutes: { path: string; route: Router }[] = [
   { path: '/purchases', route: PurchaseRoutes },
   { path: '/payments', route: PaymentRoutes },
   { path: '/audits', route: AuditRoutes },
+  { path: '/dashboard', route: DashboardRoutes },
 ];
 
 for (const { path, route } of moduleRoutes) {

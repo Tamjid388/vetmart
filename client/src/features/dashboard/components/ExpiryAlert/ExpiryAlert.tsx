@@ -43,6 +43,7 @@ function ExpiryAlert({ data }: ExpiryAlertProps) {
         columns={columns}
         dataSource={data}
         pagination={false}
+        scroll={{ x: 480 }}
         locale={{ emptyText: 'No expiry alerts' }}
       />
     </Card>

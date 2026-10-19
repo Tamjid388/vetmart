@@ -1,3 +1,6 @@
+import { Alert, Button, Card, Skeleton } from 'antd';
+import { useMe } from '../../../auth/index.ts';
+import { getApiErrorMessage } from '../../../../lib/axios/axios.ts';
 import {
   DashboardSummary,
   DueProgress,
@@ -8,18 +11,73 @@ import {
 } from '../../components/index.ts';
 import { useDashboard } from '../../hooks/useDashboard/index.ts';
 
+function DashboardLoading() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={i} size="small">
+            <Skeleton active paragraph={{ rows: 2 }} />
+          </Card>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <Card>
+          <Skeleton active paragraph={{ rows: 6 }} />
+        </Card>
+        <Card>
+          <Skeleton active paragraph={{ rows: 6 }} />
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 function DashboardPage() {
-  const { kpis, salesByPeriod, purchaseVsSales, dueProgress, lowStock, expiryAlerts } =
-    useDashboard();
+  const { isAdmin } = useMe();
+  const {
+    kpis,
+    salesByPeriod,
+    purchaseVsSales,
+    dueProgress,
+    lowStock,
+    expiryAlerts,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useDashboard();
+
+  if (isLoading) return <DashboardLoading />;
+
+  if (isError) {
+    return (
+      <Alert
+        type="error"
+        showIcon
+        message="Failed to load dashboard"
+        description={getApiErrorMessage(error, 'Failed to load dashboard')}
+        action={
+          <Button size="small" onClick={() => refetch()}>
+            Retry
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <DashboardSummary kpis={kpis} />
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      {isAdmin ? (
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+          <SalesOverviewChart dataByPeriod={salesByPeriod} />
+          <PurchaseVsSalesChart data={purchaseVsSales} />
+        </div>
+      ) : (
         <SalesOverviewChart dataByPeriod={salesByPeriod} />
-        <PurchaseVsSalesChart data={purchaseVsSales} />
-      </div>
+      )}
 
       <DueProgress items={dueProgress} />
 

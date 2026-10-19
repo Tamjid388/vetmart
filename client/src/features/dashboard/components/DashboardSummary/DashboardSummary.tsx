@@ -25,13 +25,12 @@ const kpiIcons: Record<string, ReactNode> = {
 
 type KpiMeta = {
   tone: StatTone;
-  featured?: boolean;
   layout?: StatLayout;
   caption?: string;
 };
 
 const KPI_META: Record<string, KpiMeta> = {
-  sales: { tone: 'green', featured: true, caption: 'vs yesterday' },
+  sales: { tone: 'green', caption: 'vs yesterday' },
   purchase: { tone: 'orange', caption: 'vs yesterday' },
   collection: { tone: 'cyan', caption: 'vs yesterday' },
   due: { tone: 'amber', caption: 'vs yesterday' },
@@ -59,7 +58,6 @@ function KpiCard({ kpi }: { kpi: DashboardKpi }) {
       kpi={kpi}
       icon={kpiIcons[kpi.id] ?? <FundOutlined />}
       tone={meta.tone}
-      featured={meta.featured}
       layout={meta.layout}
       caption={meta.caption}
     />

@@ -20,27 +20,14 @@ type StatCardProps = {
   kpi: DashboardKpi;
   icon: ReactNode;
   tone?: StatTone;
-  featured?: boolean;
   layout?: StatLayout;
   caption?: string;
 };
 
-function TrendPill({
-  kpi,
-  featured,
-}: {
-  kpi: DashboardKpi;
-  featured: boolean;
-}) {
+function TrendPill({ kpi }: { kpi: DashboardKpi }) {
   const isUp = kpi.changePercent >= 0;
   const isHealthy = kpi.goodWhen === 'up' ? isUp : !isUp;
-  const tone = isHealthy
-    ? featured
-      ? 'bg-emerald-400/15 text-emerald-300'
-      : 'bg-green-50 text-green-700'
-    : featured
-      ? 'bg-red-400/15 text-red-300'
-      : 'bg-red-50 text-red-600';
+  const tone = isHealthy ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600';
 
   return (
     <span
@@ -56,7 +43,6 @@ function StatCard({
   kpi,
   icon,
   tone = 'slate',
-  featured = false,
   layout = 'flow',
   caption,
 }: StatCardProps) {
@@ -77,7 +63,7 @@ function StatCard({
               {formatTaka(kpi.value)}
             </p>
           </div>
-          <TrendPill kpi={kpi} featured={false} />
+          <TrendPill kpi={kpi} />
         </div>
         {caption && <p className="mt-1 pl-12 text-xs text-slate-400">{caption}</p>}
       </Card>
@@ -87,42 +73,24 @@ function StatCard({
   return (
     <Card
       size="small"
-      className={
-        featured
-          ? 'border-transparent bg-[#0C231A] transition-colors hover:bg-[#123022]'
-          : 'border-slate-200 transition-colors hover:border-slate-300'
-      }
+      className="border-slate-200 transition-colors hover:border-slate-300"
     >
       <div className="flex items-start justify-between gap-2">
-        <p
-          className={`min-w-0 truncate pt-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${
-            featured ? 'text-white/60' : 'text-slate-500'
-          }`}
-        >
+        <p className="min-w-0 truncate pt-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
           {kpi.title}
         </p>
         <span
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-base ${
-            featured ? 'bg-emerald-400/15 text-emerald-300' : TONE_TILE[tone]
-          }`}
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-base ${TONE_TILE[tone]}`}
         >
           {icon}
         </span>
       </div>
-      <p
-        className={`mt-1 truncate font-semibold tabular-nums ${
-          featured ? 'text-2xl text-white' : 'text-[22px] leading-8 text-slate-900'
-        }`}
-      >
+      <p className="mt-1 truncate text-[22px] font-semibold leading-8 tabular-nums text-slate-900">
         {formatTaka(kpi.value)}
       </p>
       <div className="mt-1.5 flex items-center gap-1.5">
-        <TrendPill kpi={kpi} featured={featured} />
-        {caption && (
-          <span className={`text-[11px] ${featured ? 'text-white/50' : 'text-slate-400'}`}>
-            {caption}
-          </span>
-        )}
+        <TrendPill kpi={kpi} />
+        {caption && <span className="text-[11px] text-slate-400">{caption}</span>}
       </div>
     </Card>
   );
