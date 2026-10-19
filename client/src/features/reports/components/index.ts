@@ -1,1 +1,10 @@
+export { CustomerDuesSection } from './CustomerDuesSection/index.ts';
+export { ExpirySection } from './ExpirySection/index.ts';
+export { ProfitSection } from './ProfitSection/index.ts';
+export { PurchasesSection } from './PurchasesSection/index.ts';
+export { ReportFilters } from './ReportFilters/index.ts';
+export { ReportOverviewCards } from './ReportOverviewCards/index.ts';
 export { ReportsPanel } from './ReportsPanel/index.ts';
+export { SalesSection } from './SalesSection/index.ts';
+export { StockSection } from './StockSection/index.ts';
+export { VendorDuesSection } from './VendorDuesSection/index.ts';
