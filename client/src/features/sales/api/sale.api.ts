@@ -20,6 +20,10 @@ export async function getSales(
   if (params?.paymentStatus) query.paymentStatus = params.paymentStatus;
   if (params?.saleType) query.saleType = params.saleType;
   if (params?.customerId) query.customerId = params.customerId;
+  if (params?.customerName) query.customerName = params.customerName;
+  if (params?.area) query.area = params.area;
+  if (params?.dateFrom) query.dateFrom = params.dateFrom;
+  if (params?.dateTo) query.dateTo = params.dateTo;
 
   const res = await apiGetWithMeta<SaleResponse[]>(BASE, { params: query });
   return res;

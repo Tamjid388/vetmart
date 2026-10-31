@@ -31,6 +31,7 @@ export type SaleCustomer = {
   id: string;
   name: string;
   phone: string;
+  area?: string | null;
 };
 
 export type SaleResponse = {
@@ -92,6 +93,10 @@ export type SaleListQueryParams = {
   paymentStatus?: SalePaymentStatus;
   saleType?: SaleType;
   customerId?: string;
+  customerName?: string;
+  area?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type SaleListMeta = {
