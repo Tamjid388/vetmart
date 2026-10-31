@@ -28,10 +28,10 @@ export type MenuGroupKey = 'overview' | 'inventory' | 'salesParties' | 'insights
 
 export const MENU_GROUPS: { key: MenuGroupKey; label: string }[] = [
   { key: 'overview', label: 'Overview' },
-  { key: 'inventory', label: 'ইনভেন্টরি (Inventory)' },
-  { key: 'salesParties', label: 'বিক্রি ও পার্টি (Sales & Parties)' },
-  { key: 'insights', label: 'ইনসাইটস (Insights)' },
-  { key: 'system', label: 'সিস্টেম (System)' },
+  { key: 'inventory', label: 'Inventory' },
+  { key: 'salesParties', label: 'Sales & Parties' },
+  { key: 'insights', label: 'Insights' },
+  { key: 'system', label: 'System' },
 ];
 
 export const ROUTE_GROUP_MAP: Record<string, MenuGroupKey> = {
