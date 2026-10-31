@@ -30,7 +30,7 @@ export interface ICreateSalePayload {
   notes?: string;
 }
 
-export type TSaleCustomer = Pick<Customer, 'id' | 'name' | 'phone'>;
+export type TSaleCustomer = Pick<Customer, 'id' | 'name' | 'phone' | 'area'>;
 
 export type TSaleItemProduct = Pick<Product, 'id' | 'name' | 'unit'>;
 

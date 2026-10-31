@@ -6,6 +6,7 @@ import { AppError } from '../../shared/AppError.js';
 import { QueryBuilder } from '../../shared/QueryBuilder.js';
 import type { IQueryParams } from '../../shared/QueryBuilder.js';
 import { SaleSearchableFields } from './sale.constant.js';
+import { normalizeArea } from '../../shared/normalize.js';
 import { allocateFifo, computeSaleTotals, round2, startOfToday } from './sale.logic.js';
 import { toSaleResponse } from './sale.interface.js';
 import type {
@@ -19,7 +20,7 @@ import type {
 type Tx = PrismaTypes.TransactionClient;
 
 const saleInclude = {
-  customer: { select: { id: true, name: true, phone: true } },
+  customer: { select: { id: true, name: true, phone: true, area: true } },
   items: {
     include: {
       product: { select: { id: true, name: true, unit: true } },
@@ -326,12 +327,63 @@ const create = async (
   throw lastError;
 };
 
+export const buildLedgerSaleWhere = (query: {
+  customerName?: string;
+  area?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}): PrismaTypes.SaleWhereInput => {
+  const where: PrismaTypes.SaleWhereInput = {};
+  const customer: { name?: { contains: string; mode: 'insensitive' }; area?: string } = {};
+  if (typeof query.customerName === 'string' && query.customerName.trim()) {
+    customer.name = { contains: query.customerName.trim(), mode: 'insensitive' };
+  }
+  if (typeof query.area === 'string') {
+    const normalized = normalizeArea(query.area);
+    if (normalized) customer.area = normalized;
+  }
+  if (Object.keys(customer).length > 0) {
+    where.customer = customer;
+  }
+  let gte: Date | undefined;
+  let lte: Date | undefined;
+  if (typeof query.dateFrom === 'string' && query.dateFrom) {
+    const d = new Date(query.dateFrom);
+    if (Number.isNaN(d.getTime())) {
+      throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid dateFrom');
+    }
+    d.setHours(0, 0, 0, 0);
+    gte = d;
+  }
+  if (typeof query.dateTo === 'string' && query.dateTo) {
+    const d = new Date(query.dateTo);
+    if (Number.isNaN(d.getTime())) {
+      throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid dateTo');
+    }
+    d.setHours(23, 59, 59, 999);
+    lte = d;
+  }
+  if (gte && lte && gte > lte) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'dateFrom must not be after dateTo');
+  }
+  if (gte || lte) {
+    where.saleDate = { ...(gte ? { gte } : {}), ...(lte ? { lte } : {}) };
+  }
+  return where;
+};
+
 const getAll = async (query: IQueryParams, role: TSaleRole) => {
   const qbQuery: IQueryParams = { isDeleted: false };
   if (typeof query['paymentStatus'] === 'string') qbQuery['paymentStatus'] = query['paymentStatus'];
   if (typeof query['saleType'] === 'string') qbQuery['saleType'] = query['saleType'];
   if (typeof query['customerId'] === 'string') qbQuery['customerId'] = query['customerId'];
   if (typeof query['soldBy'] === 'string') qbQuery['soldBy'] = query['soldBy'];
+  const ledgerWhere = buildLedgerSaleWhere({
+    customerName: typeof query['customerName'] === 'string' ? query['customerName'] : undefined,
+    area: typeof query['area'] === 'string' ? query['area'] : undefined,
+    dateFrom: typeof query['dateFrom'] === 'string' ? query['dateFrom'] : undefined,
+    dateTo: typeof query['dateTo'] === 'string' ? query['dateTo'] : undefined,
+  });
   if (typeof query.searchTerm === 'string') qbQuery.searchTerm = query.searchTerm;
   if (typeof query.page === 'string') qbQuery.page = query.page;
   if (typeof query.limit === 'string') qbQuery.limit = query.limit;
@@ -341,8 +393,9 @@ const getAll = async (query: IQueryParams, role: TSaleRole) => {
   const builder = new QueryBuilder<TSaleResponse>(
     {
       findMany: async (args) => {
+        const baseWhere = ((args as Prisma.SaleFindManyArgs).where ?? {}) as Record<string, unknown>;
         const sales = (await prisma.sale.findMany({
-          ...((args as Prisma.SaleFindManyArgs).where ? { where: (args as Prisma.SaleFindManyArgs).where } : {}),
+          where: { ...baseWhere, ...ledgerWhere },
           ...((args as Prisma.SaleFindManyArgs).orderBy
             ? { orderBy: (args as Prisma.SaleFindManyArgs).orderBy }
             : {}),
@@ -356,7 +409,10 @@ const getAll = async (query: IQueryParams, role: TSaleRole) => {
         })) as unknown as TPopulatedSale[];
         return sales.map((sale) => toSaleResponse(sale, role));
       },
-      count: (args) => prisma.sale.count(args as Prisma.SaleCountArgs),
+      count: (args) => {
+        const baseWhere = ((args as Prisma.SaleCountArgs).where ?? {}) as Record<string, unknown>;
+        return prisma.sale.count({ where: { ...baseWhere, ...ledgerWhere } } as Prisma.SaleCountArgs);
+      },
     },
     qbQuery,
   );
