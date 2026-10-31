@@ -2,7 +2,7 @@ import { Avatar, Button, Drawer, List, Typography } from 'antd';
 import { CloseOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router';
 import { useLogout, useMe } from '../../../features/auth/index.ts';
-import { getMoreSheetItems } from '../menuItems.tsx';
+import { getMoreSheetSections } from '../menuItems.tsx';
 
 type MoreSheetProps = {
   open: boolean;
@@ -21,7 +21,7 @@ function MoreSheet({ open, onClose }: MoreSheetProps) {
 
   const displayName = user?.name?.trim() || user?.email || 'Staff account';
   const displayRole = user?.role === 'admin' ? 'সুপার অ্যাডমিন' : 'স্টাফ (Staff)';
-  const rows = getMoreSheetItems(user?.role);
+  const sections = getMoreSheetSections(user?.role);
 
   const go = (key: string) => {
     onClose();
@@ -57,29 +57,36 @@ function MoreSheet({ open, onClose }: MoreSheetProps) {
           <div className="text-xs text-slate-500">{displayRole}</div>
         </div>
       </div>
-      <List
-        dataSource={rows}
-        renderItem={(item) => {
-          const key = item.key;
-          const isActive =
-            !!key && (location.pathname === key || location.pathname.startsWith(`${key}/`));
-          return (
-            <List.Item
-              onClick={() => go(key)}
-              className={`cursor-pointer !px-2 ${isActive ? '!bg-green-50' : ''}`}
-            >
-              <List.Item.Meta
-                avatar={<span className="text-lg text-slate-600">{item.icon}</span>}
-                title={
-                  <Typography.Text strong={isActive} style={isActive ? { color: '#16A34A' } : undefined}>
-                    {item.label}
-                  </Typography.Text>
-                }
-              />
-            </List.Item>
-          );
-        }}
-      />
+      {sections.map((section) => (
+        <div key={section.groupLabel} className="mb-1">
+          <Typography.Text type="secondary" className="!px-2 !text-xs">
+            {section.groupLabel}
+          </Typography.Text>
+          <List
+            dataSource={section.items}
+            renderItem={(item) => {
+              const key = item.key;
+              const isActive =
+                !!key && (location.pathname === key || location.pathname.startsWith(`${key}/`));
+              return (
+                <List.Item
+                  onClick={() => go(key)}
+                  className={`cursor-pointer !px-2 ${isActive ? '!bg-green-50' : ''}`}
+                >
+                  <List.Item.Meta
+                    avatar={<span className="text-lg text-slate-600">{item.icon}</span>}
+                    title={
+                      <Typography.Text strong={isActive} style={isActive ? { color: '#16A34A' } : undefined}>
+                        {item.label}
+                      </Typography.Text>
+                    }
+                  />
+                </List.Item>
+              );
+            }}
+          />
+        </div>
+      ))}
       <button
         type="button"
         disabled={isLoggingOut}
