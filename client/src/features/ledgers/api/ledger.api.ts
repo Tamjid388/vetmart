@@ -1,0 +1,6 @@
+import { getSales } from '../../sales/api/index.ts';
+import type { SaleListQueryParams } from '../../sales/types/index.ts';
+
+export async function getCustomerLedger(params?: SaleListQueryParams) {
+  return getSales(params);
+}
