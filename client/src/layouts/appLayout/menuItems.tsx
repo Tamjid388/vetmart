@@ -24,6 +24,31 @@ export type AppMenuItem = NonNullable<MenuProps['items']>[number] & {
 
 export const ADMIN_ONLY: string[] = ['admin'];
 
+export type MenuGroupKey = 'overview' | 'inventory' | 'salesParties' | 'insights' | 'system';
+
+export const MENU_GROUPS: { key: MenuGroupKey; label: string }[] = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'inventory', label: 'ইনভেন্টরি (Inventory)' },
+  { key: 'salesParties', label: 'বিক্রি ও পার্টি (Sales & Parties)' },
+  { key: 'insights', label: 'ইনসাইটস (Insights)' },
+  { key: 'system', label: 'সিস্টেম (System)' },
+];
+
+export const ROUTE_GROUP_MAP: Record<string, MenuGroupKey> = {
+  '/dashboard': 'overview',
+  '/products': 'inventory',
+  '/categories': 'inventory',
+  '/purchases': 'inventory',
+  '/sales': 'salesParties',
+  '/customers': 'salesParties',
+  '/vendors': 'salesParties',
+  '/payments': 'salesParties',
+  '/reports': 'insights',
+  '/audits': 'insights',
+  '/settings': 'system',
+  '/auth/login': 'system',
+};
+
 export const appMenuItems: AppMenuItem[] = [
   { key: '/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
   { key: '/products', label: 'পণ্য (Products)', icon: <MedicineBoxOutlined /> },
@@ -54,8 +79,8 @@ const pageTitles: Record<string, string> = {
   '/auth/login': 'লগইন (Login)',
 };
 
-/** Returns menu items visible for the given role. Staff never sees admin-only entries. */
-export function getAppMenuItems(role?: string): AppMenuItem[] {
+/** Flat filtered list — single source for role filtering. Grouping builds on top of this. */
+export function getFlatMenuItems(role?: string): AppMenuItem[] {
   return appMenuItems.filter((item) => {
     // The in-app Login entry is redundant once signed in.
     if (typeof item?.key === 'string' && item.key.startsWith('/auth') && role) {
@@ -65,6 +90,31 @@ export function getAppMenuItems(role?: string): AppMenuItem[] {
     if (!allowed || allowed.length === 0) return true;
     return !!role && allowed.includes(role);
   });
+}
+
+/** Returns menu items visible for the given role, grouped under labeled sections. Staff never sees admin-only entries. Empty groups are dropped. */
+export function getAppMenuItems(role?: string): AppMenuItem[] {
+  const flat = getFlatMenuItems(role);
+  const byGroup = new Map<MenuGroupKey, AppMenuItem[]>();
+  for (const item of flat) {
+    const key = typeof item?.key === 'string' ? (item.key as string) : '';
+    const group = ROUTE_GROUP_MAP[key] ?? 'system';
+    const list = byGroup.get(group);
+    if (list) list.push(item);
+    else byGroup.set(group, [item]);
+  }
+  const grouped: AppMenuItem[] = [];
+  for (const group of MENU_GROUPS) {
+    const children = byGroup.get(group.key);
+    if (!children || children.length === 0) continue;
+    grouped.push({
+      type: 'group',
+      key: group.key,
+      label: group.label,
+      children,
+    } as AppMenuItem);
+  }
+  return grouped;
 }
 
 export function getPageTitle(pathname: string): string {
@@ -128,11 +178,28 @@ export type MoreSheetRow = {
   icon?: ReactNode;
 };
 
+export function getMoreSheetSections(role?: string): { groupLabel: string; items: MoreSheetRow[] }[] {
+  const flat = getFlatMenuItems(role).filter(
+    (item) => typeof item?.key === 'string' && !BOTTOM_TAB_ROUTES.includes(item.key as string),
+  );
+  const byGroup = new Map<MenuGroupKey, MoreSheetRow[]>();
+  for (const item of flat) {
+    const entry = item as { key: string; label?: ReactNode; icon?: ReactNode };
+    const group = ROUTE_GROUP_MAP[entry.key] ?? 'system';
+    const row: MoreSheetRow = { key: entry.key, label: entry.label, icon: entry.icon };
+    const list = byGroup.get(group);
+    if (list) list.push(row);
+    else byGroup.set(group, [row]);
+  }
+  const sections: { groupLabel: string; items: MoreSheetRow[] }[] = [];
+  for (const group of MENU_GROUPS) {
+    const items = byGroup.get(group.key);
+    if (!items || items.length === 0) continue;
+    sections.push({ groupLabel: group.label, items });
+  }
+  return sections;
+}
+
 export function getMoreSheetItems(role?: string): MoreSheetRow[] {
-  return getAppMenuItems(role)
-    .filter((item) => typeof item?.key === 'string' && !BOTTOM_TAB_ROUTES.includes(item.key))
-    .map((item) => {
-      const entry = item as { key: string; label?: ReactNode; icon?: ReactNode };
-      return { key: entry.key, label: entry.label, icon: entry.icon };
-    });
+  return getMoreSheetSections(role).flatMap((section) => section.items);
 }
