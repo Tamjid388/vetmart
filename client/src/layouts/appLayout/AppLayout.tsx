@@ -6,7 +6,7 @@ import { useLogout, useMe } from '../../features/auth/index.ts';
 import { BRAND } from '../../lib/brand.ts';
 import AppHeader from './AppHeader.tsx';
 import VetMartLogo from './VetMartLogo.tsx';
-import { getAppMenuItems, getPageTitle } from './menuItems.tsx';
+import { getAppMenuItems, getFlatMenuItems, getPageTitle } from './menuItems.tsx';
 import { BottomTabBar, MoreSheet, useIsMobile } from './mobile/index.ts';
 
 const { Sider, Content } = Layout;
@@ -23,9 +23,10 @@ function AppLayout() {
   const { mutate: signOut, isPending: isLoggingOut } = useLogout();
   const isMobile = useIsMobile();
   const menuItems = getAppMenuItems(user?.role);
+  const flatItems = getFlatMenuItems(user?.role);
 
   const selectedKey =
-    menuItems.find(
+    flatItems.find(
       (item) =>
         typeof item?.key === 'string' &&
         location.pathname.startsWith(item.key),
