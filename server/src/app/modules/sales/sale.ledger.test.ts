@@ -16,7 +16,12 @@ describe('buildLedgerSaleWhere', () => {
     expect(where.saleDate.lte).toBeInstanceOf(Date);
   });
   it('throws 400 when dateFrom is after dateTo', () => {
-    expect(() => buildLedgerSaleWhere({ dateFrom: '2026-10-31', dateTo: '2026-10-01' })).toThrow();
+    try {
+      buildLedgerSaleWhere({ dateFrom: '2026-10-31', dateTo: '2026-10-01' });
+      throw new Error('expected AppError was not thrown');
+    } catch (err) {
+      expect((err as { statusCode?: number }).statusCode).toBe(400);
+    }
   });
   it('empty customerName does not add customer filter (CASH null-safe)', () => {
     expect(buildLedgerSaleWhere({ customerName: '   ' })).toEqual({});

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Col, Row, Statistic, Typography } from 'antd';
+import { Alert, Card, Col, Row, Statistic, Typography } from 'antd';
 import { LedgerFilters } from '../../components/LedgerFilters/index.ts';
 import { LedgerTable } from '../../components/LedgerTable/index.ts';
 import { LedgerCardList } from '../../components/LedgerCardList/index.ts';
@@ -32,7 +32,7 @@ function CustomerLedgerPage() {
     setPage(1);
   };
 
-  const { data, total, isLoading } = useCustomerLedger({
+  const { data, total, isLoading, error } = useCustomerLedger({
     customerName: filters.name.trim() || undefined,
     area: filters.area || undefined,
     dateFrom: filters.dateFrom,
@@ -55,16 +55,25 @@ function CustomerLedgerPage() {
         </div>
         <Row gutter={16} className="mb-4">
           <Col span={8}>
-            <Statistic title="মোট বিল" value={formatTaka(totalBill)} />
+            <Statistic title="মোট বিল (এই পাতা)" value={formatTaka(totalBill)} />
           </Col>
           <Col span={8}>
-            <Statistic title="মোট জমা" value={formatTaka(totalPaid)} />
+            <Statistic title="মোট জমা (এই পাতা)" value={formatTaka(totalPaid)} />
           </Col>
           <Col span={8}>
-            <Statistic title="মোট বাকি" value={formatTaka(totalDue)} valueStyle={{ color: totalDue > 0 ? '#dc2626' : undefined }} />
+            <Statistic title="মোট বাকি (এই পাতা)" value={formatTaka(totalDue)} valueStyle={{ color: totalDue > 0 ? '#dc2626' : undefined }} />
           </Col>
         </Row>
-        <Typography.Text type="secondary">Selected period only — মোট বাকি নয়</Typography.Text>
+        <Typography.Text type="secondary">শুধু এই পাতার যোগফল — সব পাতার মোট নয়, selected period-এর lifetime মোট বাকিও নয়</Typography.Text>
+        {error ? (
+          <Alert
+            className="mt-4"
+            type="error"
+            showIcon
+            message="লেজার আনা যায়নি"
+            description="Filter বা server সমস্যা হয়েছে। Date range ঠিক করে আবার চেষ্টা করুন।"
+          />
+        ) : null}
         <div className="mt-4">
           {isMobile ? (
             <LedgerCardList data={data} page={page} pageSize={LEDGER_PAGE_SIZE} total={total} loading={isLoading} onPageChange={setPage} />
