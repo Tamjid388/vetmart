@@ -8,6 +8,7 @@ import {
   ViewCustomerPage,
   EditCustomerPage,
 } from '../features/customers';
+import { CustomerLedgerPage } from '../features/ledgers';
 import {
   ProductsPage,
   CreateProductPage,
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
       { path: 'customers/new', Component: CreateCustomerPage },
       { path: 'customers/:id', Component: ViewCustomerPage },
       { path: 'customers/:id/edit', Component: EditCustomerPage },
+      { path: 'customer-ledger', Component: CustomerLedgerPage },
       { path: 'products', Component: ProductsPage },
       { path: 'products/new', Component: CreateProductPage },
       { path: 'products/:id', Component: ViewProductPage },
