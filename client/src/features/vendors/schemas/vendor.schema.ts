@@ -11,11 +11,11 @@ export function getVendorSubmitErrorMessage(
   action: 'create' | 'update' = 'create',
 ): string {
   if (isPhoneConflictError(error)) {
-    return 'This phone number is already registered to another supplier.';
+    return 'This phone number is already registered to another vendor.';
   }
   return getApiErrorMessage(
     error,
-    action === 'create' ? 'Failed to create supplier' : 'Failed to update supplier',
+    action === 'create' ? 'Failed to create vendor' : 'Failed to update vendor',
   );
 }
 

@@ -23,7 +23,7 @@ function CreateVendorPage() {
       },
       {
         onSuccess: () => {
-          message.success('Supplier saved');
+          message.success('Vendor saved');
           navigate('/vendors');
         },
         onError: (error) => {
@@ -37,8 +37,8 @@ function CreateVendorPage() {
     <div className="flex flex-col gap-4">
       <Breadcrumb
         items={[
-          { title: <Link to="/vendors">Suppliers</Link> },
-          { title: 'Add Supplier' },
+          { title: <Link to="/vendors">Vendors</Link> },
+          { title: 'Add Vendor' },
         ]}
       />
       <VendorForm

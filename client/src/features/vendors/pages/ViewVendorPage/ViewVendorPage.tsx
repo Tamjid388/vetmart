@@ -17,14 +17,14 @@ function ViewVendorPage() {
   const handleDelete = () => {
     if (!vendor) return;
     modal.confirm({
-      title: 'Delete supplier',
+      title: 'Delete vendor',
       content: `Delete “${vendor.companyName}”? This cannot be undone.`,
       okText: 'Delete',
       okType: 'danger',
       onOk: () => {
         deleteVendor(vendor.id, {
           onSuccess: () => {
-            message.success('Supplier deleted');
+            message.success('Vendor deleted');
             navigate('/vendors');
           },
           onError: (error) => {
@@ -48,9 +48,9 @@ function ViewVendorPage() {
   if (!vendor) {
     return (
       <Card>
-        <Empty description="Supplier not found">
+        <Empty description="Vendor not found">
           <Button type="primary" onClick={() => navigate('/vendors')}>
-            Back to suppliers
+            Back to vendors
           </Button>
         </Empty>
       </Card>
@@ -62,7 +62,7 @@ function ViewVendorPage() {
       <Breadcrumb
         className="[&>ol]:flex-wrap"
         items={[
-          { title: <Link to="/vendors">Suppliers</Link> },
+          { title: <Link to="/vendors">Vendors</Link> },
           {
             title: (
               <span className="inline-block max-w-[45vw] truncate align-bottom md:max-w-none">

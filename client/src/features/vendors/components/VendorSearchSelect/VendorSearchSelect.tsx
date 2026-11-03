@@ -21,7 +21,7 @@ type VendorSearchSelectProps = {
 function VendorSearchSelect({
   value,
   onChange,
-  placeholder = 'Search supplier by company or phone',
+  placeholder = 'Search vendor by company or phone',
   onCreateNew,
   disabled = false,
 }: VendorSearchSelectProps) {
@@ -53,7 +53,7 @@ function VendorSearchSelect({
       onSearch={setSearch}
       onSelect={handleSelect}
       onClear={handleClear}
-      notFoundContent={isLoading ? <Spin size="small" /> : 'No suppliers found'}
+      notFoundContent={isLoading ? <Spin size="small" /> : 'No vendors found'}
       dropdownRender={(menu) => (
         <div>
           {menu}
@@ -67,7 +67,7 @@ function VendorSearchSelect({
                   icon={<PlusOutlined />}
                   onClick={() => onCreateNew(search.trim())}
                 >
-                  Create new supplier{search.trim() ? ` for “${search.trim()}”` : ''}
+                  Create new vendor{search.trim() ? ` for “${search.trim()}”` : ''}
                 </Button>
               </div>
             </>

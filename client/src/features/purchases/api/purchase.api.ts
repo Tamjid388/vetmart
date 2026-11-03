@@ -19,6 +19,9 @@ export async function getPurchases(
   if (params?.sortOrder) query.sortOrder = params.sortOrder;
   if (params?.paymentStatus) query.paymentStatus = params.paymentStatus;
   if (params?.supplierId) query.supplierId = params.supplierId;
+  if (params?.supplierName) query.supplierName = params.supplierName;
+  if (params?.dateFrom) query.dateFrom = params.dateFrom;
+  if (params?.dateTo) query.dateTo = params.dateTo;
 
   const res = await apiGetWithMeta<PurchaseResponse[]>(BASE, { params: query });
   return res;

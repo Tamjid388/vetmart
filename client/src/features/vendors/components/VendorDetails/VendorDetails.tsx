@@ -23,7 +23,7 @@ function VendorDetails({ vendor }: VendorDetailsProps) {
   if (!vendor) {
     return (
       <Card>
-        <Empty description="Supplier not found" />
+        <Empty description="Vendor not found" />
       </Card>
     );
   }
@@ -51,7 +51,7 @@ function VendorDetails({ vendor }: VendorDetailsProps) {
           <span className="text-slate-500">{formatTaka(0)} — settled</span>
         )}
       </Descriptions.Item>
-      <Descriptions.Item label="Supplier Since" span={2}>
+      <Descriptions.Item label="Vendor Since" span={2}>
         {formatDate(vendor.createdAt)}
       </Descriptions.Item>
     </Descriptions>

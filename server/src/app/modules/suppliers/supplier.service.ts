@@ -106,9 +106,46 @@ const softDelete = async (id: string): Promise<TSupplierResponse> => {
   return toSupplierResponse(supplier);
 };
 
+/**
+ * Lightweight args for the searchable supplier dropdown.
+ * Non-deleted suppliers only, id/companyName/phone, companyName-sorted.
+ */
+export const buildSupplierDropdownArgs = (query: { searchTerm?: string; limit?: string }) => {
+  const where: { isDeleted: boolean; OR?: { companyName?: object; phone?: object }[] } = {
+    isDeleted: false,
+  };
+  if (typeof query.searchTerm === 'string' && query.searchTerm.trim()) {
+    const term = query.searchTerm.trim();
+    where.OR = [{ companyName: { contains: term, mode: 'insensitive' } }, { phone: { contains: term } }];
+  }
+  let take = 20;
+  if (typeof query.limit === 'string') {
+    const parsed = Number.parseInt(query.limit, 10);
+    if (Number.isFinite(parsed)) take = Math.min(50, Math.max(1, parsed));
+  }
+  return {
+    where,
+    orderBy: { companyName: 'asc' } as const,
+    take,
+    select: { id: true, companyName: true, phone: true } as const,
+  };
+};
+
+export type TSupplierDropdownItem = {
+  id: string;
+  companyName: string;
+  phone: string;
+};
+
+const getDropdown = async (query: { searchTerm?: string; limit?: string }): Promise<TSupplierDropdownItem[]> => {
+  const args = buildSupplierDropdownArgs(query);
+  return prisma.supplier.findMany(args);
+};
+
 export const SupplierService = {
   create,
   getAll,
+  getDropdown,
   getById,
   updateById,
   softDelete,

@@ -1,6 +1,13 @@
 export type LedgerFiltersValue = {
-  name: string;
+  name?: string;
+  customerId?: string;
   area?: string;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
+export type VendorLedgerFiltersValue = {
+  supplierId?: string;
   dateFrom?: string;
   dateTo?: string;
 };

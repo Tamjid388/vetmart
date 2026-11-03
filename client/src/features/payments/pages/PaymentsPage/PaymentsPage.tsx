@@ -97,7 +97,7 @@ function VendorPaymentsTab() {
           <VendorSearchSelect
             value={vendorId}
             onChange={handleVendorChange}
-            placeholder="Filter history by supplier"
+            placeholder="Filter history by vendor"
             onCreateNew={() => navigate('/vendors/new')}
           />
         </div>
@@ -146,7 +146,7 @@ function PaymentsPage() {
               আদায় এখানে করবেন।
             </li>
             <li>
-              <b>ভেন্ডর ট্যাব:</b> আপনি সাপ্লায়ারের কাছে বাকিতে মাল কিনেছেন — সেই বাকি
+              <b>ভেন্ডর ট্যাব:</b> আপনি ভেন্ডরের কাছে বাকিতে মাল কিনেছেন — সেই বাকি
               টাকা পরিশোধ এখানে করবেন।
             </li>
             <li>মনে রাখুন: এখানে টাকা দিলে/নিলে স্টক বাড়বে-কমবে না, শুধু বাকির হিসাব কমবে।</li>

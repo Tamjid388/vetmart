@@ -1,4 +1,7 @@
-import { Card, Pagination, Tag } from 'antd';
+import { useState } from 'react';
+import { Button, Card, Empty, Pagination, Skeleton, Tag } from 'antd';
+import { DownOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { Link } from 'react-router';
 import type { SalePaymentStatus, SaleResponse } from '../../../sales/types/index.ts';
 import { formatDateTime, formatTaka } from '../../../sales/utils/format.ts';
 import { LEDGER_PAGE_SIZE } from '../../types/index.ts';
@@ -19,35 +22,154 @@ type LedgerCardListProps = {
 };
 
 function LedgerCardList({ data, page, pageSize = LEDGER_PAGE_SIZE, total, loading = false, onPageChange }: LedgerCardListProps) {
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  if (loading && data.length === 0) {
+    return (
+      <div className="flex flex-col gap-3">
+        {Array.from({ length: 4 }, (_, index) => (
+          <Card key={index} size="small" className="w-full">
+            <Skeleton active paragraph={{ rows: 3 }} />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return <Empty description="No customer entries found" className="py-8" />;
+  }
+
   return (
     <div className="flex flex-col gap-3">
-      {data.map((sale) => (
-        <Card key={sale.id} loading={loading} size="small">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <div className="truncate font-medium text-slate-800">{sale.customer?.name ?? 'Cash Customer'}</div>
-              <div className="text-xs text-slate-500">
-                {[sale.customer?.phone, sale.customer?.area].filter(Boolean).join(' · ') || '—'}
+      {data.map((sale) => {
+        const expanded = expandedIds.has(sale.id);
+        return (
+          <Card key={sale.id} loading={loading} size="small">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="truncate font-medium text-slate-800">
+                  {(sale.customer?.id ?? sale.customerId) ? (
+                    <Link to={`/customers/${sale.customer?.id ?? sale.customerId}`}>
+                      {sale.customer?.name ?? 'Customer'}
+                    </Link>
+                  ) : (
+                    (sale.customer?.name ?? 'Cash Customer')
+                  )}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {[sale.customer?.phone, sale.customer?.area].filter(Boolean).join(' · ') || '—'}
+                </div>
+              </div>
+              <Tag color={statusColor[sale.paymentStatus]}>{sale.paymentStatus}</Tag>
+            </div>
+            <div className="mt-2 text-xs text-slate-500">
+              #{sale.invoiceNo} · {formatDateTime(sale.saleDate)} · {sale.items.length} item{sale.items.length === 1 ? '' : 's'}
+            </div>
+            <div className="mt-2 grid grid-cols-3 gap-x-2 gap-y-1 text-sm">
+              <div className="min-w-0">
+                <div className="text-[11px] text-slate-500">Bill</div>
+                <div className="truncate font-medium text-slate-800">{formatTaka(sale.grandTotal)}</div>
+              </div>
+              <div className="min-w-0">
+                <div className="text-[11px] text-slate-500">Paid</div>
+                <div className="truncate text-slate-800">{formatTaka(sale.paidAmount)}</div>
+              </div>
+              <div className="min-w-0 text-right">
+                <div className="text-[11px] text-slate-500">Due</div>
+                <div className={`truncate ${sale.dueAmount > 0 ? 'font-medium text-red-600' : 'text-slate-800'}`}>
+                  {formatTaka(sale.dueAmount)}
+                </div>
               </div>
             </div>
-            <Tag color={statusColor[sale.paymentStatus]}>{sale.paymentStatus}</Tag>
-          </div>
-          <div className="mt-2 text-xs text-slate-500">
-            #{sale.invoiceNo} · {formatDateTime(sale.saleDate)} · {sale.items.length} item{sale.items.length === 1 ? '' : 's'}
-          </div>
-          <div className="mt-1 text-xs text-slate-600">
-            {sale.items.slice(0, 3).map((item) => item.product?.name ?? item.productId).join(', ')}
-            {sale.items.length > 3 ? ` +${sale.items.length - 3} more` : ''}
-          </div>
-          <div className="mt-2 flex justify-between text-sm">
-            <span>Bill {formatTaka(sale.grandTotal)}</span>
-            <span>Paid {formatTaka(sale.paidAmount)}</span>
-            <span className={sale.dueAmount > 0 ? 'font-medium text-red-600' : ''}>
-              Due {formatTaka(sale.dueAmount)}
-            </span>
-          </div>
-        </Card>
-      ))}
+            <div className="mt-2 border-t border-slate-100 pt-2">
+              <Button
+                block
+                onClick={() => toggleExpanded(sale.id)}
+                aria-expanded={expanded}
+                aria-label={
+                  expanded
+                    ? `Hide full details for invoice ${sale.invoiceNo}`
+                    : `View full details for invoice ${sale.invoiceNo}, ${sale.items.length} items`
+                }
+                icon={expanded ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 font-medium text-blue-700 shadow-none hover:!border-blue-400 hover:!bg-blue-100 hover:!text-blue-800 active:!bg-blue-200"
+              >
+                <span className="flex-1 text-left">
+                  {expanded
+                    ? 'Hide full details'
+                    : `View full details · ${sale.items.length} item${sale.items.length === 1 ? '' : 's'}`}
+                </span>
+                <DownOutlined className={`text-xs transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+              </Button>
+              {expanded ? (
+                <div className="mt-1 flex flex-col gap-2">
+                  {sale.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-start justify-between gap-2 rounded bg-slate-50 px-2 py-1.5"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-[13px] font-medium text-slate-800">
+                          {item.product?.name ?? item.productId}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {item.batch?.batchNumber ? `Lot ${item.batch.batchNumber}` : 'No lot info'} · Qty{' '}
+                          {item.qty} × {formatTaka(item.sellingPrice)}
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-[13px] font-medium text-slate-800">
+                        {formatTaka(item.lineTotal)}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex flex-col gap-0.5 text-xs text-slate-500">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span>{formatTaka(sale.subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Discount</span>
+                      <span>{formatTaka(sale.discount)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>VAT</span>
+                      <span>{formatTaka(sale.vatTotal)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Method</span>
+                      <span>{sale.paymentMethod ?? '— (fully due)'}</span>
+                    </div>
+                    {sale.notes ? (
+                      <div className="break-words">
+                        <span>Note: </span>
+                        <span className="text-slate-600">{sale.notes}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-1 text-xs text-slate-600">
+                  {sale.items.slice(0, 3).map((item) => item.product?.name ?? item.productId).join(', ')}
+                  {sale.items.length > 3 ? ` +${sale.items.length - 3} more` : ''}
+                </div>
+              )}
+            </div>
+          </Card>
+        );
+      })}
       <Pagination
         current={page}
         pageSize={pageSize}

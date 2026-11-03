@@ -82,7 +82,7 @@ function VendorPaymentForm({
         initialValues={initialSupplierId ? { supplierId: initialSupplierId, method: 'CASH' } : { method: 'CASH' }}
         onFinish={handleFinish}
       >
-        <Form.Item label="Supplier (required)" name="supplierId" rules={paymentSchema.supplierId}>
+        <Form.Item label="Vendor (required)" name="supplierId" rules={paymentSchema.supplierId}>
           <VendorSearchSelect
             value={supplierId}
             onChange={handleSupplierChange}
@@ -135,7 +135,7 @@ function VendorPaymentForm({
           <Form.Item label="Linked GRN (optional)" name="purchaseId">
             <Select
               allowClear
-              placeholder={supplierId ? 'Select a due GRN (optional)' : 'Select a supplier first'}
+              placeholder={supplierId ? 'Select a due GRN (optional)' : 'Select a vendor first'}
               disabled={!supplierId}
               options={openPurchases.map((purchase) => ({
                 value: purchase.id,

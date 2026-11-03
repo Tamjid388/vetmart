@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Alert, Card, Col, Row, Statistic, Typography } from 'antd';
+import { Alert, Card } from 'antd';
 import { LedgerFilters } from '../../components/LedgerFilters/index.ts';
 import { LedgerTable } from '../../components/LedgerTable/index.ts';
 import { LedgerCardList } from '../../components/LedgerCardList/index.ts';
 import { useCustomerLedger } from '../../hooks/useCustomerLedger/index.ts';
 import { LEDGER_PAGE_SIZE, type LedgerFiltersValue } from '../../types/index.ts';
-import { formatTaka } from '../../../sales/utils/format.ts';
 import { useIsMobile } from '../../../../layouts/appLayout/index.ts';
 
 function toISODate(d: Date): string {
@@ -24,7 +23,7 @@ function defaultLast30Days(): { dateFrom: string; dateTo: string } {
 
 function CustomerLedgerPage() {
   const isMobile = useIsMobile();
-  const [filters, setFilters] = useState<LedgerFiltersValue>({ name: '', ...defaultLast30Days() });
+  const [filters, setFilters] = useState<LedgerFiltersValue>({ name: '', customerId: undefined, ...defaultLast30Days() });
   const [page, setPage] = useState(1);
 
   const handleFiltersChange = (next: LedgerFiltersValue) => {
@@ -33,7 +32,8 @@ function CustomerLedgerPage() {
   };
 
   const { data, total, isLoading, error } = useCustomerLedger({
-    customerName: filters.name.trim() || undefined,
+    customerId: filters.customerId || undefined,
+    customerName: filters.customerId ? undefined : filters.name?.trim() || undefined,
     area: filters.area || undefined,
     dateFrom: filters.dateFrom,
     dateTo: filters.dateTo,
@@ -43,28 +43,12 @@ function CustomerLedgerPage() {
     limit: LEDGER_PAGE_SIZE,
   });
 
-  const totalBill = data.reduce((sum, sale) => sum + sale.grandTotal, 0);
-  const totalPaid = data.reduce((sum, sale) => sum + sale.paidAmount, 0);
-  const totalDue = data.reduce((sum, sale) => sum + sale.dueAmount, 0);
-
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <div className="mb-4">
           <LedgerFilters value={filters} onChange={handleFiltersChange} />
         </div>
-        <Row gutter={16} className="mb-4">
-          <Col span={8}>
-            <Statistic title="মোট বিল (এই পাতা)" value={formatTaka(totalBill)} />
-          </Col>
-          <Col span={8}>
-            <Statistic title="মোট জমা (এই পাতা)" value={formatTaka(totalPaid)} />
-          </Col>
-          <Col span={8}>
-            <Statistic title="মোট বাকি (এই পাতা)" value={formatTaka(totalDue)} valueStyle={{ color: totalDue > 0 ? '#dc2626' : undefined }} />
-          </Col>
-        </Row>
-        <Typography.Text type="secondary">শুধু এই পাতার যোগফল — সব পাতার মোট নয়, selected period-এর lifetime মোট বাকিও নয়</Typography.Text>
         {error ? (
           <Alert
             className="mt-4"

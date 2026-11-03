@@ -48,7 +48,7 @@ function PurchaseTable({
       ),
     },
     {
-      title: 'Supplier',
+      title: 'Vendor',
       key: 'supplier',
       render: (_, purchase) => (
         <span className="font-medium text-slate-800">{purchase.supplier?.companyName ?? '—'}</span>

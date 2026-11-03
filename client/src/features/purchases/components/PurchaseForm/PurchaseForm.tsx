@@ -247,7 +247,7 @@ function PurchaseForm({ onSubmit, submitting = false, serverError }: PurchaseFor
     <div className="flex flex-col gap-4 xl:flex-row xl:items-start">
       <Card title="GRN Lines" className="min-w-0 flex-1">
         <div className="mb-4 flex flex-col gap-2">
-          <Typography.Text strong>Supplier (required)</Typography.Text>
+          <Typography.Text strong>Vendor (required)</Typography.Text>
           <VendorSearchSelect
             value={supplierId}
             onChange={handleSupplierChange}
@@ -366,7 +366,7 @@ function PurchaseForm({ onSubmit, submitting = false, serverError }: PurchaseFor
           <Input.TextArea
             rows={2}
             size="large"
-            placeholder="Supplier challan / invoice ref (optional)"
+            placeholder="Vendor challan / invoice ref (optional)"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -383,7 +383,7 @@ function PurchaseForm({ onSubmit, submitting = false, serverError }: PurchaseFor
           </Button>
           {!supplierId && (
             <Typography.Text type="secondary" className="text-center text-xs">
-              Select a supplier to enable GRN entry
+              Select a vendor to enable GRN entry
             </Typography.Text>
           )}
         </div>

@@ -42,7 +42,7 @@ function VendorCardList({
   }
 
   if (data.length === 0) {
-    return <Empty description="No suppliers found" className="py-8" />;
+    return <Empty description="No vendors found" className="py-8" />;
   }
 
   return (

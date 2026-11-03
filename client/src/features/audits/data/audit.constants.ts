@@ -17,7 +17,7 @@ export const AUDIT_MODULE_OPTIONS: { value: AuditModule; label: string }[] = [
   { value: 'stock', label: 'Stock' },
   { value: 'user', label: 'Users' },
   { value: 'customer', label: 'Customers' },
-  { value: 'supplier', label: 'Suppliers' },
+  { value: 'supplier', label: 'Vendors' },
   { value: 'product', label: 'Products' },
 ];
 

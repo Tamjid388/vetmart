@@ -6,5 +6,5 @@ export function getPurchaseSubmitErrorMessage(error: unknown): string {
 }
 
 export const purchaseSchema = {
-  supplierId: [{ required: true, message: 'Select a supplier first' }],
+  supplierId: [{ required: true, message: 'Select a vendor first' }],
 };

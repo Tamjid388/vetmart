@@ -32,6 +32,18 @@ const getAreas = catchAsync(async (_req: Request, res: Response) => {
   });
 });
 
+const getDropdown = catchAsync(async (req: Request, res: Response) => {
+  const result = await CustomerService.getDropdown({
+    searchTerm: typeof req.query['searchTerm'] === 'string' ? req.query['searchTerm'] : undefined,
+    limit: typeof req.query['limit'] === 'string' ? req.query['limit'] : undefined,
+  });
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Customer dropdown fetched successfully',
+    data: result,
+  });
+});
+
 const getById = catchAsync(async (req: Request, res: Response) => {
   const result = await CustomerService.getById(req.params['id'] as string);
   sendResponse(res, {
@@ -63,6 +75,7 @@ export const CustomerController = {
   create,
   getAll,
   getAreas,
+  getDropdown,
   getById,
   updateById,
   softDelete,

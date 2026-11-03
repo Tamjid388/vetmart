@@ -15,7 +15,10 @@ export function formatDateTime(value: string) {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(date);
+    hour12: true,
+  })
+    .format(date)
+    .replace(/\b(am|pm)\b/i, (m) => m.toUpperCase());
 }
 
 /** Line-level 2-decimal rounding — mirrors the server rule so the POS preview matches. */

@@ -1,5 +1,6 @@
 import { Table, Tag } from 'antd';
 import type { TableColumnsType } from 'antd';
+import { Link } from 'react-router';
 import type { SaleItemResponse, SalePaymentStatus, SaleResponse } from '../../../sales/types/index.ts';
 import { formatDateTime, formatTaka } from '../../../sales/utils/format.ts';
 import { LEDGER_PAGE_SIZE } from '../../types/index.ts';
@@ -60,14 +61,26 @@ function LedgerTable({ data, page, pageSize = LEDGER_PAGE_SIZE, total, isLoading
     {
       title: 'Customer',
       key: 'customer',
-      render: (_, sale) => (
-        <div>
-          <div className="font-medium text-slate-800">{sale.customer?.name ?? 'Cash Customer'}</div>
-          <div className="text-xs text-slate-500">
-            {[sale.customer?.phone, sale.customer?.area].filter(Boolean).join(' · ') || '—'}
+      render: (_, sale) => {
+        const customerId = sale.customer?.id ?? sale.customerId;
+        const customerName = sale.customer?.name ?? (sale.customerId ? 'Customer' : 'Cash Customer');
+        return (
+          <div>
+            <div className="font-medium text-slate-800">
+              {customerId ? (
+                <Link to={`/customers/${customerId}`} onClick={(e) => e.stopPropagation()}>
+                  {customerName}
+                </Link>
+              ) : (
+                customerName
+              )}
+            </div>
+            <div className="text-xs text-slate-500">
+              {[sale.customer?.phone, sale.customer?.area].filter(Boolean).join(' · ') || '—'}
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: 'Invoice',

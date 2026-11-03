@@ -56,7 +56,7 @@ function VendorForm({
   return (
     <Card>
       <Typography.Title level={4} className="!mb-6">
-        {isEdit ? 'Edit Supplier' : 'Add Supplier'}
+        {isEdit ? 'Edit Vendor' : 'Add Vendor'}
       </Typography.Title>
 
       <Form<VendorFormValues>
@@ -104,7 +104,7 @@ function VendorForm({
         <div className="mt-6 flex justify-end gap-3">
           <Button onClick={onCancel}>Cancel</Button>
           <Button type="primary" htmlType="submit" loading={submitting}>
-            {isEdit ? 'Save Changes' : 'Save Supplier'}
+            {isEdit ? 'Save Changes' : 'Save Vendor'}
           </Button>
         </div>
       </Form>

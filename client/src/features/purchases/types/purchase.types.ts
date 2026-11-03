@@ -91,6 +91,9 @@ export type PurchaseListQueryParams = {
   sortOrder?: 'asc' | 'desc';
   paymentStatus?: PurchasePaymentStatus;
   supplierId?: string;
+  supplierName?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type PurchaseListMeta = {

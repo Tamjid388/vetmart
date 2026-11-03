@@ -15,7 +15,7 @@ export function getPaymentSubmitErrorMessage(error: unknown): string {
 
 export const paymentSchema = {
   customerId: [{ required: true, message: 'Select a customer first' }],
-  supplierId: [{ required: true, message: 'Select a supplier first' }],
+  supplierId: [{ required: true, message: 'Select a vendor first' }],
   amount: [{ required: true, message: 'Enter an amount greater than 0' }],
   method: [{ required: true, message: 'Select a payment method' }],
 };

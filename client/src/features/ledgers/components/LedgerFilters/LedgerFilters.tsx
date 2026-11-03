@@ -1,7 +1,9 @@
-import { DatePicker, Input, Select } from 'antd';
+import { useState } from 'react';
+import { DatePicker, Input, Select, Spin } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useCustomerAreas } from '../../../customers/hooks/useCustomerAreas/index.ts';
+import { useCustomerDropdown } from '../../../../shared/hooks/index.ts';
 import type { LedgerFiltersValue } from '../../types/index.ts';
 
 const { RangePicker } = DatePicker;
@@ -17,6 +19,11 @@ function toISODate(d: Dayjs): string {
 
 function LedgerFilters({ value, onChange }: LedgerFiltersProps) {
   const { areas } = useCustomerAreas();
+  const [customerSearch, setCustomerSearch] = useState('');
+  const { data: customers, isLoading: customersLoading } = useCustomerDropdown({
+    searchTerm: customerSearch.trim() || undefined,
+    limit: 20,
+  });
 
   const rangeValue: [Dayjs, Dayjs] | null =
     value.dateFrom && value.dateTo ? [dayjs(value.dateFrom), dayjs(value.dateTo)] : null;
@@ -27,8 +34,24 @@ function LedgerFilters({ value, onChange }: LedgerFiltersProps) {
         allowClear
         prefix={<SearchOutlined className="text-slate-400" />}
         placeholder="Search customer name..."
-        value={value.name}
+        value={value.name ?? ''}
         onChange={(event) => onChange({ ...value, name: event.target.value })}
+        className="w-full max-w-xs"
+      />
+      <Select
+        showSearch
+        allowClear
+        placeholder="Select customer..."
+        value={value.customerId || undefined}
+        onChange={(customerId) => onChange({ ...value, customerId: customerId || undefined })}
+        onSearch={setCustomerSearch}
+        filterOption={false}
+        loading={customersLoading}
+        notFoundContent={customersLoading ? <Spin size="small" /> : 'No customers found'}
+        options={customers.map((customer) => ({
+          value: customer.id,
+          label: `${customer.name} (${customer.phone})${customer.area ? ` · ${customer.area}` : ''}`,
+        }))}
         className="w-full max-w-xs"
       />
       <Select

@@ -32,14 +32,14 @@ function VendorsPage() {
 
   const handleDelete = (vendor: Vendor) => {
     modal.confirm({
-      title: 'Delete supplier',
+      title: 'Delete vendor',
       content: `Delete “${vendor.companyName}”? This cannot be undone.`,
       okText: 'Delete',
       okType: 'danger',
       onOk: () => {
         deleteVendor(vendor.id, {
           onSuccess: () => {
-            message.success('Supplier deleted');
+            message.success('Vendor deleted');
           },
           onError: (error) => {
             message.error(getVendorSubmitErrorMessage(error, 'update'));
@@ -58,7 +58,7 @@ function VendorsPage() {
           block
           onClick={() => navigate('/vendors/new')}
         >
-          Add Supplier
+          Add Vendor
         </Button>
         <VendorFilters value={filters} onChange={handleFiltersChange} />
         <VendorCardList
@@ -87,7 +87,7 @@ function VendorsPage() {
             className="lg:ml-auto"
             onClick={() => navigate('/vendors/new')}
           >
-            Add Supplier
+            Add Vendor
           </Button>
         </div>
 

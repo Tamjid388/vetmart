@@ -107,7 +107,7 @@ function PurchaseDetails({ purchase }: PurchaseDetailsProps) {
       </div>
 
       <Descriptions bordered column={{ xs: 1, sm: 2 }} size="middle" layout={isMobile ? 'vertical' : 'horizontal'}>
-        <Descriptions.Item label="Supplier">
+        <Descriptions.Item label="Vendor">
           {purchase.supplier
             ? `${purchase.supplier.companyName} (${purchase.supplier.phone})`
             : '—'}

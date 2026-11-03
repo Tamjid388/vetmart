@@ -30,7 +30,7 @@ function EditVendorPage() {
       },
       {
         onSuccess: () => {
-          message.success('Supplier updated');
+          message.success('Vendor updated');
           navigate('/vendors');
         },
         onError: (error) => {
@@ -53,9 +53,9 @@ function EditVendorPage() {
   if (!vendor) {
     return (
       <Card>
-        <Empty description="Supplier not found">
+        <Empty description="Vendor not found">
           <Button type="primary" onClick={() => navigate('/vendors')}>
-            Back to suppliers
+            Back to vendors
           </Button>
         </Empty>
       </Card>
@@ -66,8 +66,8 @@ function EditVendorPage() {
     <div className="flex flex-col gap-4">
       <Breadcrumb
         items={[
-          { title: <Link to="/vendors">Suppliers</Link> },
-          { title: 'Edit Supplier' },
+          { title: <Link to="/vendors">Vendors</Link> },
+          { title: 'Edit Vendor' },
         ]}
       />
       <VendorForm

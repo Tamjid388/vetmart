@@ -109,6 +109,43 @@ const softDelete = async (id: string): Promise<TCustomerResponse> => {
 };
 
 /**
+ * Lightweight args for the searchable customer dropdown.
+ * Active customers only, id/name/phone/area, name-sorted.
+ */
+export const buildCustomerDropdownArgs = (query: { searchTerm?: string; limit?: string }) => {
+  const where: { isDeleted: boolean; OR?: { name?: object; phone?: object }[] } = {
+    isDeleted: false,
+  };
+  if (typeof query.searchTerm === 'string' && query.searchTerm.trim()) {
+    const term = query.searchTerm.trim();
+    where.OR = [{ name: { contains: term, mode: 'insensitive' } }, { phone: { contains: term } }];
+  }
+  let take = 20;
+  if (typeof query.limit === 'string') {
+    const parsed = Number.parseInt(query.limit, 10);
+    if (Number.isFinite(parsed)) take = Math.min(50, Math.max(1, parsed));
+  }
+  return {
+    where,
+    orderBy: { name: 'asc' } as const,
+    take,
+    select: { id: true, name: true, phone: true, area: true } as const,
+  };
+};
+
+export type TCustomerDropdownItem = {
+  id: string;
+  name: string;
+  phone: string;
+  area: string | null;
+};
+
+const getDropdown = async (query: { searchTerm?: string; limit?: string }): Promise<TCustomerDropdownItem[]> => {
+  const args = buildCustomerDropdownArgs(query);
+  return prisma.customer.findMany(args);
+};
+
+/**
  * Distinct area names for the customer form suggestions.
  * Values are normalized on read too, so legacy mixed-case rows
  * (`Mirpur` next to `mirpur`) collapse into one entry even before
@@ -135,6 +172,7 @@ export const CustomerService = {
   create,
   getAll,
   getAreas,
+  getDropdown,
   getById,
   updateById,
   softDelete,

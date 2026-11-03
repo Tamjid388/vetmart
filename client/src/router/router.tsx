@@ -8,7 +8,7 @@ import {
   ViewCustomerPage,
   EditCustomerPage,
 } from '../features/customers';
-import { CustomerLedgerPage } from '../features/ledgers';
+import { CustomerLedgerPage, VendorLedgerPage } from '../features/ledgers';
 import {
   ProductsPage,
   CreateProductPage,
@@ -58,6 +58,7 @@ const router = createBrowserRouter([
       { path: 'customers/:id', Component: ViewCustomerPage },
       { path: 'customers/:id/edit', Component: EditCustomerPage },
       { path: 'customer-ledger', Component: CustomerLedgerPage },
+      { path: 'vendor-ledger', element: <RequireAdmin />, children: [{ index: true, Component: VendorLedgerPage }] },
       { path: 'products', Component: ProductsPage },
       { path: 'products/new', Component: CreateProductPage },
       { path: 'products/:id', Component: ViewProductPage },

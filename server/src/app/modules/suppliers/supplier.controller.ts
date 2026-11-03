@@ -23,6 +23,18 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDropdown = catchAsync(async (req: Request, res: Response) => {
+  const result = await SupplierService.getDropdown({
+    searchTerm: typeof req.query['searchTerm'] === 'string' ? req.query['searchTerm'] : undefined,
+    limit: typeof req.query['limit'] === 'string' ? req.query['limit'] : undefined,
+  });
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Supplier dropdown fetched successfully',
+    data: result,
+  });
+});
+
 const getById = catchAsync(async (req: Request, res: Response) => {
   const result = await SupplierService.getById(req.params['id'] as string);
   sendResponse(res, {
@@ -53,6 +65,7 @@ const softDelete = catchAsync(async (req: Request, res: Response) => {
 export const SupplierController = {
   create,
   getAll,
+  getDropdown,
   getById,
   updateById,
   softDelete,

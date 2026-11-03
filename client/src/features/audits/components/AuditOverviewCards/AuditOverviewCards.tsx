@@ -61,7 +61,7 @@ function AuditOverviewCards({ overview, loading = false }: AuditOverviewCardsPro
               value={`${overview.payments.customer.count} • ${formatTaka(overview.payments.customer.amount)}`}
             />
             <StatRow
-              label="To suppliers"
+              label="To vendors"
               value={`${overview.payments.supplier.count} • ${formatTaka(overview.payments.supplier.amount)}`}
             />
           </Card>
@@ -78,7 +78,7 @@ function AuditOverviewCards({ overview, loading = false }: AuditOverviewCardsPro
               value={`${overview.users.total} (${overview.users.admins} admin)`}
             />
             <StatRow
-              label="Customer / Supplier / Product"
+              label="Customer / Vendor / Product"
               value={`${overview.masters.customers} / ${overview.masters.suppliers} / ${overview.masters.products}`}
             />
           </Card>
